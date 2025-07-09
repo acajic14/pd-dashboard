@@ -1,22 +1,24 @@
-import React, { useState } from "react";
+import React from "react";
 
-export default function IdeasTable() {
-  const [rows, setRows] = useState([
+export default function IdeasTable({ dashboardData, updateDashboardData }) {
+  // Get current data from dashboardData with fallbacks
+  const rows = dashboardData.ideasActions || [
     { idea: "Improve process", todo: "Review SOP", who: "Ana", when: "2025-07-10", status: "In Progress" }
-  ]);
+  ];
 
   function handleAdd() {
-    setRows([...rows, { idea: "", todo: "", who: "", when: "", status: "In Progress" }]);
+    const newRows = [...rows, { idea: "", todo: "", who: "", when: "", status: "In Progress" }];
+    updateDashboardData({ ideasActions: newRows });
   }
 
   function handleChange(i, field, value) {
-    const updated = [...rows];
-    updated[i][field] = value;
-    setRows(updated);
+    const updated = rows.map((row, index) => index === i ? { ...row, [field]: value } : row);
+    updateDashboardData({ ideasActions: updated });
   }
 
   function handleDelete(i) {
-    setRows(rows.filter((_, idx) => idx !== i));
+    const newRows = rows.filter((_, idx) => idx !== i);
+    updateDashboardData({ ideasActions: newRows });
   }
 
   // Function to get status color

@@ -1,14 +1,30 @@
 import React, { useState, useEffect } from "react";
 
-export default function AdditionalContentPage() {
-  const [selectedTopic, setSelectedTopic] = useState("Performance");
-  const [showText, setShowText] = useState(true);
-  const [textContent, setTextContent] = useState("");
-  const [uploadedImages, setUploadedImages] = useState([]);
+export default function AdditionalContentPage({ pageKey, dashboardData, updateDashboardData }) {
   const [showFormatMenu, setShowFormatMenu] = useState(false);
   const textareaRef = React.useRef();
 
+  // Get current data from dashboardData with fallbacks
+  const pageData = dashboardData[pageKey] || {
+    selectedTopic: "Performance",
+    showText: true,
+    textContent: "",
+    uploadedImages: []
+  };
+
+  const { selectedTopic, showText, textContent, uploadedImages } = pageData;
+
   const topics = ["Performance", "News", "Safety", "Team", "Other"];
+
+  // Update page data
+  const updatePageData = (updates) => {
+    updateDashboardData({
+      [pageKey]: {
+        ...pageData,
+        ...updates
+      }
+    });
+  };
 
   // Clipboard paste handler for screenshots
   useEffect(() => {
@@ -30,7 +46,9 @@ export default function AdditionalContentPage() {
                 src: e.target.result,
                 name: `screenshot-${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.png`
               };
-              setUploadedImages(prev => [...prev, newImage]);
+              updatePageData({
+                uploadedImages: [...uploadedImages, newImage]
+              });
             };
             reader.readAsDataURL(blob);
             event.preventDefault();
@@ -60,7 +78,7 @@ export default function AdditionalContentPage() {
     const prefix = isNewLine ? '• ' : '\n• ';
     
     const newText = beforeText + prefix + selectedText + afterText;
-    setTextContent(newText);
+    updatePageData({ textContent: newText });
     
     setTimeout(() => {
       textarea.focus();
@@ -75,7 +93,7 @@ export default function AdditionalContentPage() {
     const afterText = textContent.substring(start);
     
     const newText = beforeText + '\n\n' + afterText;
-    setTextContent(newText);
+    updatePageData({ textContent: newText });
     
     setTimeout(() => {
       textarea.focus();
@@ -96,7 +114,9 @@ export default function AdditionalContentPage() {
             src: e.target.result,
             name: file.name
           };
-          setUploadedImages(prev => [...prev, newImage]);
+          updatePageData({
+            uploadedImages: [...uploadedImages, newImage]
+          });
         };
         reader.readAsDataURL(file);
       }
@@ -105,7 +125,9 @@ export default function AdditionalContentPage() {
 
   // Remove image
   const removeImage = (imageId) => {
-    setUploadedImages(prev => prev.filter(img => img.id !== imageId));
+    updatePageData({
+      uploadedImages: uploadedImages.filter(img => img.id !== imageId)
+    });
   };
 
   // Calculate layout ratios
@@ -218,7 +240,7 @@ export default function AdditionalContentPage() {
       fontFamily: "'Inter', Arial, sans-serif",
       boxSizing: "border-box"
     }}>
-      {/* Header Section - Back to original with only Topic selector */}
+      {/* Header Section */}
       <div style={{
         display: "flex",
         alignItems: "center",
@@ -236,7 +258,7 @@ export default function AdditionalContentPage() {
             Topic:
             <select
               value={selectedTopic}
-              onChange={e => setSelectedTopic(e.target.value)}
+              onChange={e => updatePageData({ selectedTopic: e.target.value })}
               style={{
                 marginLeft: 8,
                 padding: "6px 12px",
@@ -260,7 +282,7 @@ export default function AdditionalContentPage() {
             <input
               type="checkbox"
               checked={showText}
-              onChange={e => setShowText(e.target.checked)}
+              onChange={e => updatePageData({ showText: e.target.checked })}
               style={{ marginRight: 8 }}
             />
             <span style={{ fontSize: 14, fontWeight: 600, color: "#D40511" }}>Show Text Field</span>
@@ -431,7 +453,7 @@ export default function AdditionalContentPage() {
             <textarea
               ref={textareaRef}
               value={textContent}
-              onChange={e => setTextContent(e.target.value)}
+              onChange={e => updatePageData({ textContent: e.target.value })}
               placeholder="Enter detailed description, context, or additional information about the uploaded content..."
               style={{
                 width: "calc(100% - 16px)",

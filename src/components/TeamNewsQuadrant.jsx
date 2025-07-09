@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 
-export default function TeamNewsQuadrant() {
-  const [teamText, setTeamText] = useState("");
+export default function TeamNewsQuadrant({ dashboardData, updateDashboardData }) {
   const [showFormat, setShowFormat] = useState(false);
   const teamTextareaRef = React.useRef();
+
+  // Get current data from dashboardData with fallbacks
+  const teamText = dashboardData.teamNews || "";
 
   // Helper functions for text formatting
   const insertBulletPoint = () => {
@@ -18,7 +20,7 @@ export default function TeamNewsQuadrant() {
     const prefix = isNewLine ? '• ' : '\n• ';
     
     const newText = beforeText + prefix + selectedText + afterText;
-    setTeamText(newText);
+    updateDashboardData({ teamNews: newText });
     
     setTimeout(() => {
       textarea.focus();
@@ -33,7 +35,7 @@ export default function TeamNewsQuadrant() {
     const afterText = teamText.substring(start);
     
     const newText = beforeText + '\n\n' + afterText;
-    setTeamText(newText);
+    updateDashboardData({ teamNews: newText });
     
     setTimeout(() => {
       textarea.focus();
@@ -131,7 +133,7 @@ export default function TeamNewsQuadrant() {
         <textarea
           ref={teamTextareaRef}
           value={teamText}
-          onChange={e => setTeamText(e.target.value)}
+          onChange={e => updateDashboardData({ teamNews: e.target.value })}
           placeholder="Enter team news, updates, achievements, or announcements..."
           style={{
             width: "calc(100% - 16px)",

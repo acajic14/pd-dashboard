@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 
-export default function SafetyNewsQuadrant() {
-  const [showSafety, setShowSafety] = useState(true);
-  const [showNews, setShowNews] = useState(true);
-  const [safetyText, setSafetyText] = useState("🛡️ SAFETY:\n\n");
-  const [newsText, setNewsText] = useState("📰 NEWS:\n\n");
+export default function SafetyNewsQuadrant({ dashboardData, updateDashboardData }) {
   const [showOptions, setShowOptions] = useState(false);
   const [showSafetyFormat, setShowSafetyFormat] = useState(false);
   const [showNewsFormat, setShowNewsFormat] = useState(false);
+
+  // Get current data from dashboardData with fallbacks
+  const showSafety = dashboardData.showSafety !== undefined ? dashboardData.showSafety : true;
+  const showNews = dashboardData.showNews !== undefined ? dashboardData.showNews : true;
+  const safetyText = dashboardData.safetyText || "";
+  const newsText = dashboardData.newsText || "";
+
+  const safetyTextareaRef = React.useRef();
+  const newsTextareaRef = React.useRef();
 
   // Helper functions for text formatting
   const insertBulletPoint = (text, setText, textareaRef) => {
@@ -44,9 +49,6 @@ export default function SafetyNewsQuadrant() {
       textarea.setSelectionRange(start + 2, start + 2);
     }, 0);
   };
-
-  const safetyTextareaRef = React.useRef();
-  const newsTextareaRef = React.useRef();
 
   const FormatMenu = ({ show, onBullet, onParagraph, onClose }) => (
     show && (
@@ -150,7 +152,7 @@ export default function SafetyNewsQuadrant() {
               <input
                 type="checkbox"
                 checked={showSafety}
-                onChange={e => setShowSafety(e.target.checked)}
+                onChange={e => updateDashboardData({ showSafety: e.target.checked })}
                 style={{ marginRight: 8 }}
               />
               🛡️ Safety Section
@@ -159,7 +161,7 @@ export default function SafetyNewsQuadrant() {
               <input
                 type="checkbox"
                 checked={showNews}
-                onChange={e => setShowNews(e.target.checked)}
+                onChange={e => updateDashboardData({ showNews: e.target.checked })}
                 style={{ marginRight: 8 }}
               />
               📰 News Section
@@ -194,15 +196,18 @@ export default function SafetyNewsQuadrant() {
               </button>
               <FormatMenu
                 show={showSafetyFormat}
-                onBullet={() => insertBulletPoint(safetyText, setSafetyText, safetyTextareaRef)}
-                onParagraph={() => insertParagraph(safetyText, setSafetyText, safetyTextareaRef)}
+                onBullet={() => insertBulletPoint(safetyText, (newText) => updateDashboardData({ safetyText: newText }), safetyTextareaRef)}
+                onParagraph={() => insertParagraph(safetyText, (newText) => updateDashboardData({ safetyText: newText }), safetyTextareaRef)}
                 onClose={() => setShowSafetyFormat(false)}
               />
             </div>
             <textarea
               ref={safetyTextareaRef}
               value={safetyText}
-              onChange={e => setSafetyText(e.target.value)}
+              onChange={e => updateDashboardData({ safetyText: e.target.value })}
+              placeholder="🛡️ SAFETY:
+
+Enter safety information, alerts, or reminders..."
               style={{
                 width: "calc(100% - 16px)",
                 border: "1px solid #D40511",
@@ -245,15 +250,18 @@ export default function SafetyNewsQuadrant() {
               </button>
               <FormatMenu
                 show={showNewsFormat}
-                onBullet={() => insertBulletPoint(newsText, setNewsText, newsTextareaRef)}
-                onParagraph={() => insertParagraph(newsText, setNewsText, newsTextareaRef)}
+                onBullet={() => insertBulletPoint(newsText, (newText) => updateDashboardData({ newsText: newText }), newsTextareaRef)}
+                onParagraph={() => insertParagraph(newsText, (newText) => updateDashboardData({ newsText: newText }), newsTextareaRef)}
                 onClose={() => setShowNewsFormat(false)}
               />
             </div>
             <textarea
               ref={newsTextareaRef}
               value={newsText}
-              onChange={e => setNewsText(e.target.value)}
+              onChange={e => updateDashboardData({ newsText: e.target.value })}
+              placeholder="📰 NEWS:
+
+Enter company news, updates, or announcements..."
               style={{
                 width: "calc(100% - 16px)",
                 border: "1px solid #D40511",

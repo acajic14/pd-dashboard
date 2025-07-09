@@ -17,52 +17,67 @@ const DEFAULT_LAYOUT = LAYOUTS[7]; // 2 × 4
 
 const PerformanceQuadrant = forwardRef(function PerformanceQuadrant({
   editable,
-  onToggleEdit
+  onToggleEdit,
+  dashboardData,
+  updateDashboardData
 }, ref) {
-  const [kpis, setKpis] = useState([
+  const [showMenu, setShowMenu] = useState(false);
+
+  // Get current data from dashboardData with fallbacks
+  const kpis = dashboardData.kpis || [
     { name: "On-Time Delivery", value: 98, target: 95, period: "permanent", higherIsBetter: true },
     { name: "Error Rate", value: 1.2, target: 2, period: "permanent", higherIsBetter: false }
-  ]);
-  const [showMenu, setShowMenu] = useState(false);
-  const [layout, setLayout] = useState(DEFAULT_LAYOUT);
+  ];
+  const layout = dashboardData.performanceLayout || DEFAULT_LAYOUT;
 
   useImperativeHandle(ref, () => ({
     handleAddKpi
   }));
 
   function handleEditKpi(index, updated) {
-    setKpis(kpis.map((kpi, i) => i === index ? { ...kpi, ...updated } : kpi));
+    const newKpis = kpis.map((kpi, i) => i === index ? { ...kpi, ...updated } : kpi);
+    updateDashboardData({ kpis: newKpis });
   }
 
   function handleAddKpi() {
     const maxKpis = layout.rows * layout.cols;
     if (kpis.length < maxKpis) {
-      setKpis([
+      const newKpis = [
         ...kpis,
         { name: "New KPI", value: 0, target: 0, period: "permanent", higherIsBetter: true }
-      ]);
+      ];
+      updateDashboardData({ kpis: newKpis });
     }
     setShowMenu(false);
   }
 
   function handleDeleteKpi(index) {
-    if (kpis.length > 1) setKpis(kpis.filter((_, i) => i !== index));
+    if (kpis.length > 1) {
+      const newKpis = kpis.filter((_, i) => i !== index);
+      updateDashboardData({ kpis: newKpis });
+    }
   }
 
   function handleMoveKpi(index, direction) {
     const newKpis = [...kpis];
     const [removed] = newKpis.splice(index, 1);
     newKpis.splice(index + direction, 0, removed);
-    setKpis(newKpis);
+    updateDashboardData({ kpis: newKpis });
   }
 
   function handleLayoutChange(newLayout) {
-    setLayout(newLayout);
     const maxKpis = newLayout.rows * newLayout.cols;
+    let updatedKpis = kpis;
+    
     // If reducing max KPIs, trim the array
     if (kpis.length > maxKpis) {
-      setKpis(kpis.slice(0, maxKpis));
+      updatedKpis = kpis.slice(0, maxKpis);
     }
+    
+    updateDashboardData({ 
+      performanceLayout: newLayout,
+      kpis: updatedKpis
+    });
   }
 
   // Render the selected number of rows/cols
