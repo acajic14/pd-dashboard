@@ -1,12 +1,4 @@
 {
-  {
-  "name": "dhl-dashboard",
-  "version": "0.1.0",
-  "homepage": "https://acajic14.github.io/pd-dashboard",
-  "dependencies": {
-    // your existing dependencies
-  }
-}
 "name": "dhl-dashboard",
   "private": true,
   "version": "0.0.0",
