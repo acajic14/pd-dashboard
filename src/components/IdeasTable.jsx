@@ -21,6 +21,44 @@ export default function IdeasTable({ dashboardData, updateDashboardData }) {
     updateDashboardData({ ideasActions: newRows });
   }
 
+  // Convert full date to dd.mm format for display
+  const formatDateForDisplay = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    return `${day}.${month}`;
+  };
+
+  // Convert dd.mm format back to full date for storage (using current year)
+  const formatDateForStorage = (ddmmString) => {
+    if (!ddmmString || !ddmmString.includes('.')) return "";
+    const [day, month] = ddmmString.split('.');
+    const currentYear = new Date().getFullYear();
+    
+    // Validate day and month
+    const dayNum = parseInt(day);
+    const monthNum = parseInt(month);
+    
+    if (dayNum < 1 || dayNum > 31 || monthNum < 1 || monthNum > 12) {
+      return "";
+    }
+    
+    return `${currentYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  };
+
+  // Handle date input change
+  const handleDateChange = (i, value) => {
+    // If user types in dd.mm format, convert to full date
+    if (value.includes('.')) {
+      const fullDate = formatDateForStorage(value);
+      handleChange(i, "when", fullDate);
+    } else {
+      // If it's a regular date input, store as is
+      handleChange(i, "when", value);
+    }
+  };
+
   // Function to get status color
   const getStatusColor = (status) => {
     switch (status) {
@@ -84,17 +122,23 @@ export default function IdeasTable({ dashboardData, updateDashboardData }) {
                 />
               </td>
               <td style={{ padding: "6px", verticalAlign: "top" }}>
-                <input 
-                  value={row.todo} 
-                  onChange={e => handleChange(i, "todo", e.target.value)} 
-                  style={{ 
-                    width: "100%", 
-                    border: "1px solid #ddd", 
-                    padding: "4px", 
+                <textarea
+                  value={row.todo}
+                  onChange={e => handleChange(i, "todo", e.target.value)}
+                  style={{
+                    width: "100%",
+                    border: "1px solid #ddd",
+                    padding: "4px",
                     borderRadius: "3px",
+                    resize: "vertical",
+                    fontSize: 13,
+                    fontFamily: "'Inter', Arial, sans-serif",
+                    minHeight: "20px",
+                    lineHeight: "1.3",
                     boxSizing: "border-box"
-                  }} 
-                  placeholder="Action required..."
+                  }}
+                  rows={2}
+                  placeholder="Action steps required..."
                 />
               </td>
               <td style={{ padding: "6px", verticalAlign: "top" }}>
@@ -113,16 +157,19 @@ export default function IdeasTable({ dashboardData, updateDashboardData }) {
               </td>
               <td style={{ padding: "6px", verticalAlign: "top" }}>
                 <input 
-                  type="date" 
-                  value={row.when} 
-                  onChange={e => handleChange(i, "when", e.target.value)} 
+                  type="text"
+                  value={formatDateForDisplay(row.when)}
+                  onChange={e => handleDateChange(i, e.target.value)}
                   style={{ 
                     width: "100%", 
                     border: "1px solid #ddd", 
                     padding: "4px", 
                     borderRadius: "3px",
-                    boxSizing: "border-box"
+                    boxSizing: "border-box",
+                    textAlign: "center"
                   }}
+                  placeholder="dd.mm"
+                  maxLength={5}
                 />
               </td>
               <td style={{ padding: "6px", verticalAlign: "top" }}>
