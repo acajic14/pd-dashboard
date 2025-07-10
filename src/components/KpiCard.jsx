@@ -14,15 +14,28 @@ export default function KpiCard({
   onMoveDown,
   editable,
   isFirst,
-  isLast
+  isLast,
+  isPercentage = false
 }) {
   const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState({ name, value, target, period, higherIsBetter });
+  const [draft, setDraft] = useState({ 
+    name, 
+    value, 
+    target, 
+    period, 
+    higherIsBetter,
+    isPercentage: isPercentage || false
+  });
 
   function handleSave() {
     onEdit(draft);
     setEditing(false);
   }
+
+  // Format value display based on percentage setting
+  const formatValue = (val) => {
+    return draft.isPercentage ? `${val}%` : val;
+  };
 
   return (
     <div
@@ -46,6 +59,7 @@ export default function KpiCard({
             value={draft.name}
             onChange={e => setDraft({ ...draft, name: e.target.value })}
             style={{ fontWeight: 700, fontSize: 16, width: "90%" }}
+            placeholder="KPI Name"
           />
           <div style={{ margin: "6px 0" }}>
             <input
@@ -53,6 +67,7 @@ export default function KpiCard({
               value={draft.value}
               onChange={e => setDraft({ ...draft, value: Number(e.target.value) })}
               style={{ fontSize: 16, width: "44%", margin: 3 }}
+              placeholder="Current"
             />
             <span style={{ fontSize: 13 }}> / </span>
             <input
@@ -60,6 +75,7 @@ export default function KpiCard({
               value={draft.target}
               onChange={e => setDraft({ ...draft, target: Number(e.target.value) })}
               style={{ fontSize: 16, width: "44%", margin: 3 }}
+              placeholder="Target"
             />
           </div>
           <select
@@ -81,17 +97,58 @@ export default function KpiCard({
             <option value="higher">Higher is better</option>
             <option value="lower">Lower is better</option>
           </select>
+          <label style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            justifyContent: "center",
+            marginTop: 4,
+            fontSize: 13,
+            cursor: "pointer"
+          }}>
+            <input
+              type="checkbox"
+              checked={draft.isPercentage}
+              onChange={e => setDraft({ ...draft, isPercentage: e.target.checked })}
+              style={{ marginRight: 6 }}
+            />
+            Show as percentage (%)
+          </label>
           <div style={{ marginTop: 7 }}>
-            <button onClick={handleSave} style={{ background: "#D40511", color: "#fff", border: "none", borderRadius: 4, padding: "3px 10px", marginRight: 4 }}>Save</button>
-            <button onClick={() => setEditing(false)} style={{ background: "#eee", color: "#D40511", border: "none", borderRadius: 4, padding: "3px 10px" }}>Cancel</button>
+            <button 
+              onClick={handleSave} 
+              style={{ 
+                background: "#D40511", 
+                color: "#fff", 
+                border: "none", 
+                borderRadius: 4, 
+                padding: "3px 10px", 
+                marginRight: 4 
+              }}
+            >
+              Save
+            </button>
+            <button 
+              onClick={() => setEditing(false)} 
+              style={{ 
+                background: "#eee", 
+                color: "#D40511", 
+                border: "none", 
+                borderRadius: 4, 
+                padding: "3px 10px" 
+              }}
+            >
+              Cancel
+            </button>
           </div>
         </div>
       ) : (
         <div onClick={() => editable && setEditing(true)} style={{ cursor: editable ? "pointer" : "default" }}>
           <div style={{ fontWeight: 700, fontSize: 16 }}>{name}</div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: achieved ? "green" : "red" }}>{value}</div>
+          <div style={{ fontSize: 22, fontWeight: 700, color: achieved ? "green" : "red" }}>
+            {formatValue(value)}
+          </div>
           <div style={{ fontSize: 11, color: "#666" }}>
-            Target: {target} <span style={{ fontStyle: "italic" }}>({period})</span>
+            Target: {formatValue(target)} <span style={{ fontStyle: "italic" }}>({period})</span>
           </div>
           <div style={{ fontSize: 13, color: achieved ? "green" : "red", marginTop: 2 }}>
             {diffPercent > 0 ? "+" : ""}

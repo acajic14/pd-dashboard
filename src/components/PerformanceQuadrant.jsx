@@ -25,8 +25,8 @@ const PerformanceQuadrant = forwardRef(function PerformanceQuadrant({
 
   // Get current data from dashboardData with fallbacks
   const kpis = dashboardData.kpis || [
-    { name: "On-Time Delivery", value: 98, target: 95, period: "permanent", higherIsBetter: true },
-    { name: "Error Rate", value: 1.2, target: 2, period: "permanent", higherIsBetter: false }
+    { name: "On-Time Delivery", value: 98, target: 95, period: "permanent", higherIsBetter: true, isPercentage: true },
+    { name: "Error Rate", value: 1.2, target: 2, period: "permanent", higherIsBetter: false, isPercentage: true }
   ];
   const layout = dashboardData.performanceLayout || DEFAULT_LAYOUT;
 
@@ -44,7 +44,7 @@ const PerformanceQuadrant = forwardRef(function PerformanceQuadrant({
     if (kpis.length < maxKpis) {
       const newKpis = [
         ...kpis,
-        { name: "New KPI", value: 0, target: 0, period: "permanent", higherIsBetter: true }
+        { name: "New KPI", value: 0, target: 0, period: "permanent", higherIsBetter: true, isPercentage: false }
       ];
       updateDashboardData({ kpis: newKpis });
     }
@@ -216,6 +216,7 @@ const PerformanceQuadrant = forwardRef(function PerformanceQuadrant({
                     achieved={achieved}
                     diffPercent={diffPercent}
                     editable={editable}
+                    isPercentage={kpi.isPercentage}
                     onEdit={updated => handleEditKpi(i + rowIdx * layout.cols, updated)}
                     onDelete={() => handleDeleteKpi(i + rowIdx * layout.cols)}
                     onMoveUp={() => (i + rowIdx * layout.cols) > 0 && handleMoveKpi(i + rowIdx * layout.cols, -1)}

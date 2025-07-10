@@ -173,50 +173,71 @@ export default function SafetyNewsQuadrant({ dashboardData, updateDashboardData 
       <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
         {/* Safety Section */}
         {showSafety && (
-          <div style={{ flex: showNews ? 1 : 2, position: "relative" }}>
-            <div style={{ position: "absolute", top: 8, right: 8, zIndex: 10 }}>
-              <button
-                onClick={() => setShowSafetyFormat(f => !f)}
-                style={{
-                  background: "#f8f9fa",
-                  border: "1px solid #D40511",
-                  borderRadius: "50%",
-                  width: 24,
-                  height: 24,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 14,
-                  cursor: "pointer",
-                  color: "#D40511"
-                }}
-                title="Text Formatting"
-              >
-                ⚙️
-              </button>
-              <FormatMenu
-                show={showSafetyFormat}
-                onBullet={() => insertBulletPoint(safetyText, (newText) => updateDashboardData({ safetyText: newText }), safetyTextareaRef)}
-                onParagraph={() => insertParagraph(safetyText, (newText) => updateDashboardData({ safetyText: newText }), safetyTextareaRef)}
-                onClose={() => setShowSafetyFormat(false)}
-              />
+          <div style={{ flex: showNews ? 1 : 2 }}>
+            {/* Fixed Safety Header - Aligned with text area */}
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 0,
+              padding: "6px 8px",
+              background: "#f8f9fa",
+              border: "1px solid #D40511",
+              borderRadius: "6px 6px 0 0",
+              width: "calc(100% - 16px)", // Match text area width
+              boxSizing: "border-box"
+            }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <span style={{ fontSize: 16, marginRight: 8 }}>🛡️</span>
+                <span style={{
+                  color: "#D40511",
+                  fontWeight: 600,
+                  fontSize: 14
+                }}>Safety</span>
+              </div>
+              <div style={{ position: "relative" }}>
+                <button
+                  onClick={() => setShowSafetyFormat(f => !f)}
+                  style={{
+                    background: "#f8f9fa",
+                    border: "1px solid #D40511",
+                    borderRadius: "50%",
+                    width: 20,
+                    height: 20,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 12,
+                    cursor: "pointer",
+                    color: "#D40511"
+                  }}
+                  title="Text Formatting"
+                >
+                  ⚙️
+                </button>
+                <FormatMenu
+                  show={showSafetyFormat}
+                  onBullet={() => insertBulletPoint(safetyText, (newText) => updateDashboardData({ safetyText: newText }), safetyTextareaRef)}
+                  onParagraph={() => insertParagraph(safetyText, (newText) => updateDashboardData({ safetyText: newText }), safetyTextareaRef)}
+                  onClose={() => setShowSafetyFormat(false)}
+                />
+              </div>
             </div>
             <textarea
               ref={safetyTextareaRef}
               value={safetyText}
               onChange={e => updateDashboardData({ safetyText: e.target.value })}
-              placeholder="🛡️ SAFETY:
-
-Enter safety information, alerts, or reminders..."
+              placeholder="Enter safety information, alerts, or reminders..."
               style={{
                 width: "calc(100% - 16px)",
                 border: "1px solid #D40511",
-                borderRadius: 6,
+                borderRadius: "0 0 6px 6px",
+                borderTop: "none",
                 padding: 8,
                 fontSize: 14,
                 background: "#f8f9fa",
                 resize: "vertical",
-                height: showNews ? "140px" : "280px",
+                height: showNews ? "120px" : "240px",
                 lineHeight: "1.5",
                 boxSizing: "border-box",
                 whiteSpace: "pre-wrap"
@@ -227,50 +248,71 @@ Enter safety information, alerts, or reminders..."
 
         {/* News Section */}
         {showNews && (
-          <div style={{ flex: showSafety ? 1 : 2, position: "relative" }}>
-            <div style={{ position: "absolute", top: 8, right: 8, zIndex: 10 }}>
-              <button
-                onClick={() => setShowNewsFormat(f => !f)}
-                style={{
-                  background: "#f8f9fa",
-                  border: "1px solid #D40511",
-                  borderRadius: "50%",
-                  width: 24,
-                  height: 24,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: 14,
-                  cursor: "pointer",
-                  color: "#D40511"
-                }}
-                title="Text Formatting"
-              >
-                ⚙️
-              </button>
-              <FormatMenu
-                show={showNewsFormat}
-                onBullet={() => insertBulletPoint(newsText, (newText) => updateDashboardData({ newsText: newText }), newsTextareaRef)}
-                onParagraph={() => insertParagraph(newsText, (newText) => updateDashboardData({ newsText: newText }), newsTextareaRef)}
-                onClose={() => setShowNewsFormat(false)}
-              />
+          <div style={{ flex: showSafety ? 1 : 2 }}>
+            {/* Fixed News Header - Aligned with text area */}
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: 0,
+              padding: "6px 8px",
+              background: "#f8f9fa",
+              border: "1px solid #D40511",
+              borderRadius: "6px 6px 0 0",
+              width: "calc(100% - 16px)", // Match text area width
+              boxSizing: "border-box"
+            }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <span style={{ fontSize: 16, marginRight: 8 }}>📰</span>
+                <span style={{
+                  color: "#D40511",
+                  fontWeight: 600,
+                  fontSize: 14
+                }}>News</span>
+              </div>
+              <div style={{ position: "relative" }}>
+                <button
+                  onClick={() => setShowNewsFormat(f => !f)}
+                  style={{
+                    background: "#f8f9fa",
+                    border: "1px solid #D40511",
+                    borderRadius: "50%",
+                    width: 20,
+                    height: 20,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: 12,
+                    cursor: "pointer",
+                    color: "#D40511"
+                  }}
+                  title="Text Formatting"
+                >
+                  ⚙️
+                </button>
+                <FormatMenu
+                  show={showNewsFormat}
+                  onBullet={() => insertBulletPoint(newsText, (newText) => updateDashboardData({ newsText: newText }), newsTextareaRef)}
+                  onParagraph={() => insertParagraph(newsText, (newText) => updateDashboardData({ newsText: newText }), newsTextareaRef)}
+                  onClose={() => setShowNewsFormat(false)}
+                />
+              </div>
             </div>
             <textarea
               ref={newsTextareaRef}
               value={newsText}
               onChange={e => updateDashboardData({ newsText: e.target.value })}
-              placeholder="📰 NEWS:
-
-Enter company news, updates, or announcements..."
+              placeholder="Enter company news, updates, or announcements..."
               style={{
                 width: "calc(100% - 16px)",
                 border: "1px solid #D40511",
-                borderRadius: 6,
+                borderRadius: "0 0 6px 6px",
+                borderTop: "none",
                 padding: 8,
                 fontSize: 14,
                 background: "#f8f9fa",
                 resize: "vertical",
-                height: showNews && showSafety ? "140px" : "280px",
+                height: showNews && showSafety ? "120px" : "240px",
                 lineHeight: "1.5",
                 boxSizing: "border-box",
                 whiteSpace: "pre-wrap"
