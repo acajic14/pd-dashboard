@@ -170,7 +170,15 @@ export default function SafetyNewsQuadrant({ dashboardData, updateDashboardData 
         )}
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1 }}>
+      <div 
+        style={{ 
+          display: "flex", 
+          flexDirection: "column", 
+          gap: 12, 
+          flex: 1,
+          overflow: "visible" // Changed from hidden to visible for screenshots
+        }}
+      >
         {/* Safety Section */}
         {showSafety && (
           <div style={{ flex: showNews ? 1 : 2 }}>
@@ -184,7 +192,7 @@ export default function SafetyNewsQuadrant({ dashboardData, updateDashboardData 
               background: "#f8f9fa",
               border: "1px solid #D40511",
               borderRadius: "6px 6px 0 0",
-              width: "calc(100% - 16px)", // Match text area width
+              width: "calc(100% - 16px)",
               boxSizing: "border-box"
             }}>
               <div style={{ display: "flex", alignItems: "center" }}>
@@ -234,13 +242,14 @@ export default function SafetyNewsQuadrant({ dashboardData, updateDashboardData 
                 borderRadius: "0 0 6px 6px",
                 borderTop: "none",
                 padding: 8,
-                fontSize: 14,
+                fontSize: 12, // Reduced font size
                 background: "#f8f9fa",
                 resize: "vertical",
-                height: showNews ? "120px" : "240px",
-                lineHeight: "1.5",
+                minHeight: showNews ? "100px" : "200px", // Minimum heights
+                lineHeight: "1.3",
                 boxSizing: "border-box",
-                whiteSpace: "pre-wrap"
+                whiteSpace: "pre-wrap",
+                overflow: "visible" // Important for screenshots
               }}
             />
           </div>
@@ -259,7 +268,7 @@ export default function SafetyNewsQuadrant({ dashboardData, updateDashboardData 
               background: "#f8f9fa",
               border: "1px solid #D40511",
               borderRadius: "6px 6px 0 0",
-              width: "calc(100% - 16px)", // Match text area width
+              width: "calc(100% - 16px)",
               boxSizing: "border-box"
             }}>
               <div style={{ display: "flex", alignItems: "center" }}>
@@ -309,13 +318,14 @@ export default function SafetyNewsQuadrant({ dashboardData, updateDashboardData 
                 borderRadius: "0 0 6px 6px",
                 borderTop: "none",
                 padding: 8,
-                fontSize: 14,
+                fontSize: 12, // Reduced font size
                 background: "#f8f9fa",
                 resize: "vertical",
-                height: showNews && showSafety ? "120px" : "240px",
-                lineHeight: "1.5",
+                minHeight: showNews && showSafety ? "100px" : "200px", // Minimum heights
+                lineHeight: "1.3",
                 boxSizing: "border-box",
-                whiteSpace: "pre-wrap"
+                whiteSpace: "pre-wrap",
+                overflow: "visible" // Important for screenshots
               }}
             />
           </div>
