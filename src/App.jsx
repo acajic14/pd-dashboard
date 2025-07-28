@@ -5,7 +5,6 @@ import SafetyNewsQuadrant from "./components/SafetyNewsQuadrant";
 import IdeasTable from "./components/IdeasTable";
 import TeamNewsQuadrant from "./components/TeamNewsQuadrant";
 import AdditionalContentPage from "./components/AdditionalContentPage";
-import html2canvas from 'html2canvas';
 
 const QUADRANT_HEIGHT = 410;
 
@@ -14,8 +13,6 @@ const quadrantStyle = {
   borderRadius: 14,
   padding: 14,
   background: "#fff",
-  minHeight: QUADRANT_HEIGHT,
-  maxHeight: QUADRANT_HEIGHT,
   boxSizing: "border-box",
   position: "relative",
   overflow: "hidden",
@@ -28,7 +25,6 @@ export default function App() {
   const [team, setTeam] = useState("PUD");
   const [page, setPage] = useState("dashboard");
   const [performanceEditable, setPerformanceEditable] = useState(true);
-  const [isCapturing, setIsCapturing] = useState(false);
   const [showPageMenu, setShowPageMenu] = useState(false);
   
   // Local storage states
@@ -94,8 +90,8 @@ export default function App() {
   const getDefaultTeamData = () => ({
     // Performance Quadrant Data
     kpis: [
-      { name: "On-Time Delivery", value: 98, target: 95, period: "permanent", higherIsBetter: true },
-      { name: "Error Rate", value: 1.2, target: 2, period: "permanent", higherIsBetter: false }
+      { name: "On-Time Delivery", value: 98, target: 95, period: "permanent", higherIsBetter: true, isPercentage: true },
+      { name: "Error Rate", value: 1.2, target: 2, period: "permanent", higherIsBetter: false, isPercentage: true }
     ],
     performanceLayout: { rows: 2, cols: 4, label: "2 × 4" },
     
@@ -107,7 +103,7 @@ export default function App() {
     
     // Ideas & Actions Table Data
     ideasActions: [
-      { idea: "Improve process", todo: "Review SOP", who: "Ana", when: "2025-07-10", status: "In Progress" }
+      { idea: "Improve process", todo: "Review SOP", who: "Ana", when: "10.07", status: "In Progress" }
     ],
     
     // Team News Quadrant Data
@@ -174,6 +170,11 @@ export default function App() {
       ...updates,
       lastUpdated: new Date().toISOString()
     }));
+  };
+
+  const handlePageSelect = (selectedPage) => {
+    setPage(selectedPage);
+    setShowPageMenu(false);
   };
 
   // Export/Import functions for backup
@@ -254,45 +255,6 @@ export default function App() {
   const getCurrentPageLabel = () => {
     const currentPage = pageOptions.find(option => option.value === page);
     return currentPage ? currentPage.label : "Dashboard";
-  };
-
-  // Screenshot functionality
-  const takeScreenshot = async () => {
-    setIsCapturing(true);
-    
-    try {
-      const now = new Date();
-      const timestamp = now.toISOString().slice(0, 19).replace(/:/g, '-');
-      const filename = `PD-Dashboard-${team}-${page}-${timestamp}.png`;
-      
-      const canvas = await html2canvas(dashboardRef.current, {
-        backgroundColor: '#f6f6f6',
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        height: dashboardRef.current.scrollHeight,
-        width: dashboardRef.current.scrollWidth
-      });
-      
-      const link = document.createElement('a');
-      link.download = filename;
-      link.href = canvas.toDataURL('image/png');
-      
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-    } catch (error) {
-      console.error('Screenshot failed:', error);
-      alert('Screenshot failed. Please try again.');
-    } finally {
-      setIsCapturing(false);
-    }
-  };
-
-  const handlePageSelect = (selectedPage) => {
-    setPage(selectedPage);
-    setShowPageMenu(false);
   };
 
   // Loading state
@@ -386,101 +348,76 @@ export default function App() {
           </label>
         </div>
 
-        {/* Page Controls - Screenshot + Navigation grouped together */}
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12 }}>
-          {/* Screenshot Button - Camera Icon Only */}
+        {/* Page Navigation Dropdown */}
+        <div style={{ marginLeft: "auto", position: "relative" }}>
           <button
-            onClick={takeScreenshot}
-            disabled={isCapturing}
+            onClick={() => setShowPageMenu(m => !m)}
             style={{
-              background: isCapturing ? "#ccc" : "#D40511",
+              background: "#D40511",
               color: "#fff",
               border: "none",
-              borderRadius: "50%",
-              width: 36,
-              height: 36,
-              cursor: isCapturing ? "not-allowed" : "pointer",
+              borderRadius: 6,
+              padding: "6px 16px",
+              fontWeight: 600,
+              cursor: "pointer",
+              fontSize: 14,
               display: "flex",
               alignItems: "center",
-              justifyContent: "center",
-              fontSize: 18
+              gap: 8,
+              minWidth: 180
             }}
-            title={isCapturing ? "Capturing screenshot..." : "Take screenshot of current page"}
+            title="Select page"
           >
-            {isCapturing ? "⏳" : "📷"}
+            <span>{getCurrentPageLabel()}</span>
+            <span style={{ fontSize: 12 }}>{showPageMenu ? "▲" : "▼"}</span>
           </button>
-
-          {/* Page Navigation Dropdown */}
-          <div style={{ position: "relative" }}>
-            <button
-              onClick={() => setShowPageMenu(m => !m)}
-              style={{
-                background: "#D40511",
-                color: "#fff",
-                border: "none",
-                borderRadius: 6,
-                padding: "6px 16px",
-                fontWeight: 600,
-                cursor: "pointer",
-                fontSize: 14,
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                minWidth: 180
-              }}
-              title="Select page"
-            >
-              <span>{getCurrentPageLabel()}</span>
-              <span style={{ fontSize: 12 }}>{showPageMenu ? "▲" : "▼"}</span>
-            </button>
-            
-            {showPageMenu && (
-              <div style={{
-                position: "absolute",
-                top: 40,
-                right: 0,
-                zIndex: 100,
-                background: "#fff",
-                border: "1px solid #ccc",
-                borderRadius: 8,
-                boxShadow: "0 2px 8px #ddd",
-                padding: 8,
-                minWidth: 180
-              }}>
-                {pageOptions.map(option => (
-                  <button
-                    key={option.value}
-                    onClick={() => handlePageSelect(option.value)}
-                    style={{
-                      background: page === option.value ? "#D40511" : "transparent",
-                      color: page === option.value ? "#fff" : "#D40511",
-                      border: "none",
-                      borderRadius: 4,
-                      padding: "8px 12px",
-                      width: "100%",
-                      textAlign: "left",
-                      cursor: "pointer",
-                      fontSize: 13,
-                      fontWeight: 600,
-                      marginBottom: 2
-                    }}
-                    onMouseEnter={e => {
-                      if (page !== option.value) {
-                        e.target.style.background = "#f8f9fa";
-                      }
-                    }}
-                    onMouseLeave={e => {
-                      if (page !== option.value) {
-                        e.target.style.background = "transparent";
-                      }
-                    }}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          
+          {showPageMenu && (
+            <div style={{
+              position: "absolute",
+              top: 40,
+              right: 0,
+              zIndex: 100,
+              background: "#fff",
+              border: "1px solid #ccc",
+              borderRadius: 8,
+              boxShadow: "0 2px 8px #ddd",
+              padding: 8,
+              minWidth: 180
+            }}>
+              {pageOptions.map(option => (
+                <button
+                  key={option.value}
+                  onClick={() => handlePageSelect(option.value)}
+                  style={{
+                    background: page === option.value ? "#D40511" : "transparent",
+                    color: page === option.value ? "#fff" : "#D40511",
+                    border: "none",
+                    borderRadius: 4,
+                    padding: "8px 12px",
+                    width: "100%",
+                    textAlign: "left",
+                    cursor: "pointer",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    marginBottom: 2
+                  }}
+                  onMouseEnter={e => {
+                    if (page !== option.value) {
+                      e.target.style.background = "#f8f9fa";
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (page !== option.value) {
+                      e.target.style.background = "transparent";
+                    }
+                  }}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
